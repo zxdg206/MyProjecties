@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Day01_Cookies:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Day01_Cookies_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="Day01_Cookies/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="Day01_Cookies" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/../JAR/jakarta-taglibs-standard-1.1.2/lib/jstl.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../JAR/jakarta-taglibs-standard-1.1.2/lib/standard.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../JAR/commons-beanutils-1.9.4/commons-beanutils-1.9.4.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../JAR/commons-logging-1.2/commons-logging-1.2.jar" />
+          <element id="library" level="project" name="lib" />
+          <element id="file-copy" path="$PROJECT_DIR$/../JAR/Mysql/5.1.47/mysql-connector-java-5.1.47.jar" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
