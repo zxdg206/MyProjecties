@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--配置springmvc注解要扫描的包-->
+    <context:component-scan base-package="com.zc.controller">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <!--配置视图解析器"viewresolver"-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--注意路径的写法-->
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!-- 文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 上传文件大小限制 -->
+        <property name="maxUploadSize">
+            <value>10485760</value>
+        </property>
+        <!-- 请求的编码格式, 和 jsp 页面一致 -->
+        <property name="defaultEncoding">
+            <value>UTF-8</value>
+        </property>
+    </bean>
+
+    <!--配置核心控制器忽略的静态资源(web.xml因为中配置了拦截所有请求)-->
+    <mvc:resources mapping="/bootstrap/**" location="/bootstrap/"/>
+    <mvc:resources mapping="/adminlte/**" location="/adminlte/"/>
+    <mvc:resources mapping="/imgs/**" location="/imgs/"/>
+
+    <!--开启注解的支持-->
+    <mvc:annotation-driven>
+        <!--配置json乱码问题(第三方失效,用spring自身的)-->
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+                        <property name="failOnEmptyBeans" value="false"></property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!--定时任务-->
+    <!--文件上传-->
+    <!--后台访问拦截器,注意路径是虚拟路径-->
+    <mvc:interceptors>
+        <!--新闻展示-->
+        <mvc:interceptor>
+            <mvc:mapping path="/project/viewNews"/>
+            <mvc:mapping path="/project/toList"/>
+            <mvc:mapping path="/project/toNoticeList"/>
+            <mvc:mapping path="/project/viewsNotice"/>
+            <mvc:mapping path="/project/toHome"/>
+            <mvc:mapping path="/project/searchNews"/>
+            <bean class="com.zc.filters.ShowNewsFilter"/>
+        </mvc:interceptor>
+        <!--登陆拦截器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/user/*"/>
+            <mvc:mapping path="/news/*"/>
+            <mvc:mapping path="/notice/*"/>
+            <mvc:mapping path="/web/*"/>
+            <mvc:mapping path="/project/searchNews"/>
+            <mvc:mapping path="/project/likenews"/>
+            <mvc:exclude-mapping path="/web/userlogin"/>
+            <mvc:exclude-mapping path="/web/userRegist"/>
+            <mvc:exclude-mapping path="/web/checkcode"/>
+            <mvc:exclude-mapping path="/web/checkName"/>
+            <bean class="com.zc.filters.LoginFilter"/>
+        </mvc:interceptor>
+        <!--普通用户权限拦截-->
+        <mvc:interceptor>
+            <mvc:mapping path="/user/*"/>
+            <mvc:mapping path="/news/*"/>
+            <mvc:mapping path="/notice/*"/>
+            <!--忽略资源-->
+            <bean class="com.zc.filters.UserPermissionFilter"/>
+        </mvc:interceptor>
+        <!--新闻管理员权限拦截-->
+        <mvc:interceptor>
+            <mvc:mapping path="/user/*"/>
+            <mvc:mapping path="/notice/*"/>
+            <bean class="com.zc.filters.ManagerPermissionFilter"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
